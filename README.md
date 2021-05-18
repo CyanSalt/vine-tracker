@@ -241,7 +241,7 @@ You can also use the following Composition APIs:
 </template>
 
 <script>
-import { useTracker } from 'vine-tracker-next/vue';
+import { useTracker } from 'vine-tracker/dist/vue';
 
 export default {
   setup() {

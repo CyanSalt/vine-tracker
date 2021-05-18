@@ -8,7 +8,7 @@ describe('VueTracker', () => {
   const defaultGIOInstance = track.config.gioInstance
   const mockGIOInstance = jest.fn()
 
-  afterEach(() => {
+  afterAll(() => {
     track.config.gioInstance = defaultGIOInstance
   })
 

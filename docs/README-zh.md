@@ -238,7 +238,7 @@ export default {
 </template>
 
 <script>
-import { useTracker } from 'vine-tracker-next/vue';
+import { useTracker } from 'vine-tracker/dist/vue';
 
 export default {
   setup() {
