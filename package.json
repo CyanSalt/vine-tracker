@@ -1,0 +1,50 @@
+{
+  "name": "vine-tracker",
+  "version": "1.0.0-0",
+  "description": "Tracker framework for Vue.js",
+  "files": [
+    "dist",
+    "docs"
+  ],
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CyanSalt/vine-tracker.git"
+  },
+  "keywords": [
+    "tracker"
+  ],
+  "author": "CyanSalt",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CyanSalt/vine-tracker/issues"
+  },
+  "homepage": "https://github.com/CyanSalt/vine-tracker#readme",
+  "dependencies": {
+    "intersection-observer": "^0.12.0",
+    "lodash.throttle": "^4.1.1"
+  },
+  "devDependencies": {
+    "@cyansalt/eslint-config": "^1.6.1",
+    "@cyansalt/tsconfig": "^1.1.1",
+    "@types/jest": "^26.0.23",
+    "@typescript-eslint/eslint-plugin": "^4.22.0",
+    "@typescript-eslint/parser": "^4.22.0",
+    "@vue/test-utils": "^2.0.0-rc.6",
+    "eslint": "^7.24.0",
+    "eslint-plugin-galaxy": "^1.1.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-unicorn": "^30.0.0",
+    "jest": "^26.6.3",
+    "ts-jest": "^26.5.6",
+    "ttypescript": "^1.5.12",
+    "typescript": "^4.2.4",
+    "typescript-transform-aliases": "^0.2.0",
+    "vue": "^3.0.11",
+    "vue-test-utils-v1": "file:vendors/vue-test-utils-v1",
+    "vue-v2": "npm:vue@^2.6.12"
+  }
+}

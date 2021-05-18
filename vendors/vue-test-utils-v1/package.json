@@ -1,0 +1,18 @@
+{
+  "name": "vue-test-utils-v1",
+  "private": true,
+  "version": "1.0.0-0",
+  "description": "Utilities for testing Vue components.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CyanSalt/vine-tracker.git",
+    "directory": "vendors/vue-test-utils-v1"
+  },
+  "author": "CyanSalt",
+  "license": "ISC",
+  "dependencies": {
+    "@vue/test-utils": "^1.1.2",
+    "vue": "^2.6.12",
+    "vue-template-compiler": "^2.6.12"
+  }
+}
