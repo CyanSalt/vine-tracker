@@ -3,6 +3,7 @@
   "private": true,
   "version": "1.0.0-0",
   "description": "Utilities for testing Vue components.",
+  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/CyanSalt/vine-tracker.git",
