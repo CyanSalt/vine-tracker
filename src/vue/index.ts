@@ -1,10 +1,10 @@
 /// <reference lib="es2020" />
-import type { ObjectDirective, Plugin, ComponentPublicInstance, ComponentInternalInstance, InjectionKey } from 'vue'
 import { getCurrentInstance, inject } from 'vue'
-import type { TrackConfig } from '../core/config'
 import { track } from '../core/track'
 import '../lib/channels/pipe'
 import { watchIntersection, unwatchIntersection } from '../utils/intersection'
+import type { TrackConfig } from '../core/config'
+import type { ObjectDirective, Plugin, ComponentPublicInstance, ComponentInternalInstance, InjectionKey } from 'vue'
 
 declare module '../core/config' {
   export interface TrackConfig {
@@ -25,18 +25,13 @@ export type ComponentBoundMap<T> = {
   [P in keyof T]: ComponentBoundValue<T[P]>;
 }
 
-interface TrackedByMeta {
-  page?: string,
-  module?: string,
-}
-
 type TrackedByObject = ComponentBoundMap<{
   final?: boolean,
   prevented?: boolean,
   channels?: string[],
   with?: Record<string, any>,
-  meta?: TrackedByMeta,
-} & Record<string, /* Record<string, any> | undefined */any>>
+  [key: string]: any,
+}>
 
 type TrackedByFunction = (key: string, data: Record<string, any>) => unknown
 
@@ -100,30 +95,6 @@ function isPrevented(pattern: TrackByBindingPattern) {
   })
 }
 
-function extractDataFromMeta(meta: TrackedByMeta | undefined, key: string) {
-  const data = {}
-  if (!meta) return data
-  if (meta.page) {
-    let field = 'at_page'
-    if (key === 'route') {
-      field = 'from_page'
-    } else if (key === 'route.post') {
-      field = 'to_page'
-    }
-    data[field] = meta.page
-  }
-  if (meta.module) {
-    let field = 'from_module'
-    if (key === 'appear') {
-      field = 'at_module'
-    } else if (key === 'route.post') {
-      field = 'to_module'
-    }
-    data[field] = meta.module
-  }
-  return data
-}
-
 function trackByFinally(key: string, data: Record<string, any>, channels?: string[]) {
   return track(`by:${key}`, data, channels)
 }
@@ -142,7 +113,6 @@ export function trackBy(this: ComponentPublicInstance | void, key: string, data:
     }
     if (action && typeof action === 'object') {
       data = {
-        ...extractDataFromMeta(bindComponent(action.meta), key),
         ...bindComponent(action.with),
         ...bindComponent(action[key] ?? action.default),
         ...data,

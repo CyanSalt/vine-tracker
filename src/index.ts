@@ -1,1 +1,1 @@
-export { track } from './core/track';
+export { track } from './core/track'

@@ -1,5 +1,5 @@
-import type { Channel } from '../../core/channel'
 import { registerChannel } from '../../core/channel'
+import type { Channel } from '../../core/channel'
 
 const ConsoleChannel: Channel = {
   config(key, data) {

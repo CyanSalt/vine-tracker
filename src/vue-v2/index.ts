@@ -1,11 +1,11 @@
 /// <reference types="vue-v2/types/options" />
 /// <reference types="vue-v2/types/vue" />
+import { track } from '../core/track'
+import { watchIntersection, unwatchIntersection } from '../utils/intersection'
+import '../lib/channels/pipe'
+import type { TrackConfig } from '../core/config'
 import type { DirectiveOptions, PluginObject } from 'vue-v2'
 import type VueComponent from 'vue-v2'
-import type { TrackConfig } from '../core/config'
-import { track } from '../core/track'
-import '../lib/channels/pipe'
-import { watchIntersection, unwatchIntersection } from '../utils/intersection'
 
 declare module '../core/config' {
   export interface TrackConfig {
@@ -26,17 +26,11 @@ export type ComponentBoundMap<T> = {
   [P in keyof T]: ComponentBoundValue<T[P]>;
 }
 
-interface TrackedByMeta {
-  page?: string,
-  module?: string,
-}
-
 type TrackedByObject = ComponentBoundMap<{
   final?: boolean,
   prevented?: boolean,
   channels?: string[],
   with?: Record<string, any>,
-  meta?: TrackedByMeta,
   [key: string]: any,
 }>
 
@@ -106,30 +100,6 @@ function isPrevented(pattern: TrackByBindingPattern) {
   })
 }
 
-function extractDataFromMeta(meta: TrackedByMeta | undefined, key: string) {
-  const data = {}
-  if (!meta) return data
-  if (meta.page) {
-    let field = 'at_page'
-    if (key === 'route') {
-      field = 'from_page'
-    } else if (key === 'route.post') {
-      field = 'to_page'
-    }
-    data[field] = meta.page
-  }
-  if (meta.module) {
-    let field = 'from_module'
-    if (key === 'appear') {
-      field = 'at_module'
-    } else if (key === 'route.post') {
-      field = 'to_module'
-    }
-    data[field] = meta.module
-  }
-  return data
-}
-
 function trackByFinally(key: string, data: Record<string, any>, channels?: string[]) {
   return track(`by:${key}`, data, channels)
 }
@@ -148,7 +118,6 @@ export function trackBy(this: Vue | void, key: string, data: Record<string, any>
     }
     if (action && typeof action === 'object') {
       data = {
-        ...extractDataFromMeta(bindComponent(action.meta), key),
         ...bindComponent(action.with),
         ...bindComponent(action[key] ?? action.default),
         ...data,
