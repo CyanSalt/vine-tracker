@@ -87,9 +87,9 @@ function isMatchedBinding(binding: TrackByBinding, { key, el, component }: Track
 function assignWith(data: Record<string, any>, pattern: TrackByBindingPattern) {
   const assigned = bindings.filter(binding => {
     return binding.modifiers.with && isMatchedBinding(binding, pattern)
-  })
+  }).reverse()
   for (const item of assigned) {
-    data = { ...data, ...item.value }
+    data = { ...item.value, ...data }
   }
   return data
 }
@@ -108,6 +108,7 @@ export function trackBy(this: Vue | void, key: string, data: Record<string, any>
   let component: Vue | null = this || null
   let action: TrackedByOptions | undefined
   while (component) {
+    // Options
     action = component.$options.trackedBy
     const bindComponent = <T>(value: ComponentBoundValue<T>): T => {
       return typeof value === 'function'
@@ -128,6 +129,7 @@ export function trackBy(this: Vue | void, key: string, data: Record<string, any>
       const final = bindComponent(action.final)
       if (final) return trackByFinally(key, data, channels)
     }
+    // Directives (outside)
     const pattern: TrackByBindingPattern = { key, component }
     if (isPrevented(pattern)) return undefined
     data = assignWith(data, pattern)
@@ -156,6 +158,7 @@ const TrackByDirective: DirectiveOptions = {
       modifiers: modifiers as TrackByModifiers,
       component: componentInstance as VueComponent,
       listener: () => {
+        // Directives (inside)
         const data = assignWith(binding.value, { key, el })
         trackBy.call(context, key, data)
       },

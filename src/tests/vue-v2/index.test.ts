@@ -420,4 +420,62 @@ describe('VueTracker', () => {
     wrapper.destroy()
   })
 
+  it('should be executed in the correct order', () => {
+    const Descendant = {
+      template: `
+        <span></span>
+      `,
+      trackedBy: {
+        with: {
+          foo: 'b',
+          bar: 'c',
+        },
+      },
+    }
+    const Child = {
+      components: {
+        Descendant,
+      },
+      template: `
+        <Descendant ref="descendant" v-track-by:click.with="{ bar: 'd', baz: 'e' }"></Descendant>
+      `,
+      trackedBy: {
+        with: {
+          baz: 'f',
+          qux: 'g',
+        },
+      },
+    }
+    const Parent = {
+      components: {
+        Child,
+      },
+      template: `
+        <p>
+          <Child
+            ref="child"
+            v-track-by.with="{ qux: 'h', quux: 'i' }"
+            v-track-by.with.another="{ quux: 'j', corage: 'k' }"
+          ></Child>
+        </p>
+      `,
+      trackedBy: {
+        final: true,
+        with: {
+          corage: 'l',
+        },
+      },
+    }
+    const wrapper = mount(Parent, {
+      localVue,
+    })
+    const child = wrapper.findComponent({ ref: 'child' })
+    const descendant = child.findComponent({ ref: 'descendant' })
+    descendant.vm.$trackBy('click', { foo: 'a' }, ['gio'])
+    expect(mockGIOInstance).toHaveBeenCalledWith('track', 'click', { foo: 'a', bar: 'c', baz: 'e', qux: 'g', quux: 'j', corage: 'k' })
+
+    mockGIOInstance.mockClear()
+    wrapper.destroy()
+  })
+
 })
