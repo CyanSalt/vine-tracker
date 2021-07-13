@@ -1,5 +1,5 @@
-import { track } from '..'
-import '../lib/channels/gio'
+import { track } from '../src'
+import '../src/lib/channels/gio'
 
 describe('track by standard', () => {
 

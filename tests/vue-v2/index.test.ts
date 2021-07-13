@@ -1,7 +1,7 @@
 import { createLocalVue, mount } from 'vue-test-utils-v1'
-import { track } from '../..'
-import { VueTracker } from '../../vue-v2'
-import '../../lib/channels/gio'
+import { track } from '../../src'
+import { VueTracker } from '../../src/vue-v2'
+import '../../src/lib/channels/gio'
 
 describe('VueTracker', () => {
 

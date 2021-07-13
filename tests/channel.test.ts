@@ -1,6 +1,6 @@
-import { track } from '..'
-import { getAllChannelNames, registerChannel } from '../core/channel'
-import GrowingIOChannel from '../lib/channels/gio'
+import { track } from '../src'
+import { getAllChannelNames, registerChannel } from '../src/core/channel'
+import GrowingIOChannel from '../src/lib/channels/gio'
 
 describe('track', () => {
 

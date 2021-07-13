@@ -1,4 +1,4 @@
-import { track } from '../..'
+import { track } from '../../src'
 
 describe('ConsoleChannel', () => {
 

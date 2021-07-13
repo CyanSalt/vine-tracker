@@ -142,7 +142,7 @@ export function collectBy(this: ComponentPublicInstance | void, key: string, dat
   return result?.[0].result as { key: string, data: Record<string, any> } | null | undefined
 }
 
-const TrackByDirective: ObjectDirective = {
+const TrackByDirective: ObjectDirective<HTMLElement, Record<string, any>> = {
   mounted(el, { arg = '', value, modifiers, instance }, { component }) {
     const key = modifiers.route ? 'route' : arg
     const binding: TrackByBinding = {

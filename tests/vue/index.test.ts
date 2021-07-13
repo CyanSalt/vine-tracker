@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
-import { track } from '../..'
-import { useTracker, VueTracker } from '../../vue'
-import '../../lib/channels/gio'
+import { track } from '../../src'
+import { useTracker, VueTracker } from '../../src/vue'
+import '../../src/lib/channels/gio'
 
 describe('VueTracker', () => {
 

@@ -1,5 +1,5 @@
-import { track } from '..'
-import GrowingIOChannel from '../lib/channels/gio'
+import { track } from '../src'
+import GrowingIOChannel from '../src/lib/channels/gio'
 
 describe('track', () => {
 
