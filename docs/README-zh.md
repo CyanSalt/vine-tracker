@@ -238,10 +238,14 @@ export default {
 </template>
 
 <script>
-import { useTracker } from 'vine-tracker/dist/vue';
+import { defineTrackedBy, useTracker } from 'vine-tracker/dist/vue';
 
 export default {
   setup() {
+    defineTrackedBy({
+      final: true,
+    })
+
     const { trackBy, collectBy } = useTracker();
 
     function handleClick() {
