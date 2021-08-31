@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { track } from '../../src'
-import { useTracker, VueTracker } from '../../src/vue'
+import { defineTrackedBy, useTracker, VueTracker } from '../../src/vue'
 import '../../src/lib/channels/gio'
 
 describe('VueTracker', () => {
@@ -139,6 +139,39 @@ describe('VueTracker', () => {
     })
     wrapper.vm.$trackBy('click', { foo: 'bar' }, ['gio'])
     expect(mockGIOInstance).toHaveBeenCalledWith('track', 'click', { foo: 'bar' })
+
+    mockGIOInstance.mockClear()
+    wrapper.unmount()
+  })
+
+  it('should work with `defineTrackedBy` properly', () => {
+    const Component = {
+      template: `
+        <p></p>
+      `,
+      setup() {
+        defineTrackedBy({
+          final: true,
+          click: {
+            foo: 'bar',
+          },
+        })
+        const { trackBy } = useTracker()
+        return {
+          trackBy,
+        }
+      },
+    }
+    const wrapper = mount(Component, {
+      global: {
+        plugins: [
+          [VueTracker, { gioInstance: mockGIOInstance }],
+        ],
+      },
+    })
+    expect(typeof wrapper.vm.trackBy).toBe('function')
+    wrapper.vm.trackBy('click', { baz: 'qux' }, ['gio'])
+    expect(mockGIOInstance).toHaveBeenCalledWith('track', 'click', { foo: 'bar', baz: 'qux' })
 
     mockGIOInstance.mockClear()
     wrapper.unmount()

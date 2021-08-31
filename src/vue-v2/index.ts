@@ -1,42 +1,21 @@
 /// <reference types="vue-v2/types/options" />
 /// <reference types="vue-v2/types/vue" />
 import { track } from '../core/track'
+import { executeCollectBy, executeTrackBy, trackByFinally } from '../lib/integration'
 import { watchIntersection, unwatchIntersection } from '../utils/intersection'
-import '../lib/channels/pipe'
 import type { TrackConfig } from '../core/config'
+import type { TrackByEvent, TrackByContext, TrackByIteration } from '../lib/integration'
 import type { DirectiveOptions, PluginObject } from 'vue-v2'
 import type VueComponent from 'vue-v2'
 
 declare module '../core/config' {
   export interface TrackConfig {
-    /** 是否在组件未声明 track 时直接发送数据 */
-    fallbackTrackingBy?: boolean,
-    /** 检测展示的时间间隔 */
+    /** Time interval of appearing detection */
     appearingInterval?: number,
-    /** 检测展示的 IntersectionObserver 选项 */
+    /** Options for IntersectionObserver of appearing detection */
     appearingOptions?: IntersectionObserverInit,
   }
 }
-
-export type ComponentBoundValue<T> = T | (
-  (this: VueComponent, key: string, data: Record<string, any>, channels?: string[]) => NonNullable<T>
-)
-
-export type ComponentBoundMap<T> = {
-  [P in keyof T]: ComponentBoundValue<T[P]>;
-}
-
-type TrackedByObject = ComponentBoundMap<{
-  final?: boolean,
-  prevented?: boolean,
-  channels?: string[],
-  with?: Record<string, any>,
-  [key: string]: any,
-}>
-
-type TrackedByFunction = (key: string, data: Record<string, any>) => unknown
-
-export type TrackedByOptions = TrackedByObject | TrackedByFunction
 
 declare module 'vue-v2/types/vue' {
   export interface Vue {
@@ -44,6 +23,8 @@ declare module 'vue-v2/types/vue' {
     $trackBy: typeof trackBy,
   }
 }
+
+export type TrackedByOptions = TrackByContext<VueComponent>
 
 declare module 'vue-v2/types/options' {
   /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -58,22 +39,20 @@ interface TrackByModifiers extends Record<string, boolean> {
   prevent: boolean,
 }
 
-type TrackByEvent = 'appear' | keyof HTMLElementEventMap
-
 interface TrackByBinding {
   el: HTMLElement,
   arg: TrackByEvent,
   key: string,
   value: Record<string, any>,
   modifiers: TrackByModifiers,
-  component: Vue,
+  component: VueComponent,
   listener: () => void,
 }
 
 interface TrackByBindingPattern {
   el?: HTMLElement,
   key?: string,
-  component?: Vue,
+  component?: VueComponent,
 }
 
 const bindings: TrackByBinding[] = []
@@ -100,51 +79,36 @@ function isPrevented(pattern: TrackByBindingPattern) {
   })
 }
 
-function trackByFinally(key: string, data: Record<string, any>, channels?: string[]) {
-  return track(`by:${key}`, data, channels)
-}
+type Nullable<T> = T | null | undefined
 
-export function trackBy(this: Vue | void, key: string, data: Record<string, any>, channels?: string[]) {
-  let component: Vue | null = this || null
-  let action: TrackedByOptions | undefined
+function* createContextIterator(component: Nullable<VueComponent>): Iterable<TrackByIteration<VueComponent>> {
   while (component) {
-    // Options
-    action = component.$options.trackedBy
-    const bindComponent = <T>(value: ComponentBoundValue<T>): T => {
-      return typeof value === 'function'
-        ? value.call(component, key, data, channels) : value
-    }
-    if (typeof action === 'function') {
-      return bindComponent(action) as unknown as ReturnType<typeof track>
-    }
-    if (action && typeof action === 'object') {
-      data = {
-        ...bindComponent(action.with),
-        ...bindComponent(action[key] ?? action.default),
-        ...data,
-      }
-      const prevented = bindComponent(action.prevented)
-      if (prevented) return undefined
-      if (!channels) channels = bindComponent(action.channels)
-      const final = bindComponent(action.final)
-      if (final) return trackByFinally(key, data, channels)
+    const context = component.$options.trackedBy
+    yield {
+      context,
+      receiver: component,
     }
     // Directives (outside)
-    const pattern: TrackByBindingPattern = { key, component }
-    if (isPrevented(pattern)) return undefined
-    data = assignWith(data, pattern)
-    component = component.$parent as Vue | null
+    const pattern: TrackByBindingPattern = { component }
+    yield {
+      context: {
+        prevented: key => isPrevented({ ...pattern, key }),
+        default: (key, data) => assignWith(data, { ...pattern, key }),
+      },
+      receiver: component,
+    }
+    component = component.$parent
   }
-  if (track.config.fallbackTrackingBy) {
-    return trackByFinally(key, data, channels)
-  }
+}
+
+export function trackBy(this: Nullable<VueComponent>, key: string, data: Record<string, any>, channels?: string[]) {
+  return executeTrackBy(createContextIterator(this), key, data, channels)
 }
 
 trackBy.final = trackByFinally
 
-export function collectBy(this: Vue | void, key: string, data: Record<string, any> = {}) {
-  const result: ReturnType<typeof trackBy> = trackBy.call(this, key, data, ['pipe'])
-  return result?.[0].result as { key: string, data: Record<string, any> } | null | undefined
+export function collectBy(this: Nullable<VueComponent>, key: string, data: Record<string, any> = {}) {
+  return executeCollectBy(createContextIterator(this), key, data)
 }
 
 const TrackByDirective: DirectiveOptions = {
