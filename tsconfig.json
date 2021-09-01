@@ -5,7 +5,8 @@
     "declaration": true,
     "module": "CommonJS",
     "rootDir": "src",
-    "outDir": "dist"
+    "outDir": "dist",
+    "skipLibCheck": true
   },
   "include": [
     "src"
