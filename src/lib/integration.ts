@@ -1,10 +1,15 @@
 import { track } from '../core/track'
 import '../lib/channels/pipe'
+import { unwatchIntersection, watchIntersection } from '../utils/intersection'
 
 declare module '../core/config' {
   export interface TrackConfig {
     /** Whether to send data directly when the component does not define any context */
     fallbackTrackingBy?: boolean,
+    /** Time interval of appearing detection */
+    appearingInterval?: number,
+    /** Options for IntersectionObserver of appearing detection */
+    appearingOptions?: IntersectionObserverInit,
   }
 }
 
@@ -41,7 +46,7 @@ export interface TrackByIteration<T = unknown> {
   receiver?: any,
 }
 
-export function executeTrackBy<T = unknown>(iterable: Iterable<TrackByIteration<T>>, key: string, data: Record<string, any>, channels?: string[]) {
+export function executeTrackBy<T = unknown>(iterable: Iterable<TrackByIteration<T>>, key: string, data: Record<string, any> = {}, channels?: string[]) {
   for (const { context, receiver } of iterable) {
     // Options
     const bindReceiver = <U>(value: ContextBoundValue<U, T>): U => {
@@ -69,7 +74,27 @@ export function executeTrackBy<T = unknown>(iterable: Iterable<TrackByIteration<
   }
 }
 
-export function executeCollectBy<T = unknown>(iterable: Iterable<TrackByIteration<T>>, key: string, data: Record<string, any>) {
+export function executeCollectBy<T = unknown>(iterable: Iterable<TrackByIteration<T>>, key: string, data?: Record<string, any>) {
   const result = executeTrackBy(iterable, key, data, ['pipe'])
   return result?.[0].result as { key: string, data: Record<string, any> } | null | undefined
+}
+
+export function addListener(el: HTMLElement, event: TrackByEvent, listener: () => void) {
+  if (event === 'appear') {
+    watchIntersection(el, listener, {
+      once: true,
+      interval: track.config.appearingInterval ?? 300,
+      options: track.config.appearingOptions,
+    })
+  } else {
+    el.addEventListener(event, listener)
+  }
+}
+
+export function removeListener(el: HTMLElement, event: TrackByEvent, listener: () => void) {
+  if (event === 'appear') {
+    unwatchIntersection(el, listener)
+  } else {
+    el.removeEventListener(event, listener)
+  }
 }

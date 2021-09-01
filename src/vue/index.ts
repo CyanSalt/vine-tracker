@@ -1,20 +1,10 @@
 /// <reference lib="es2020" />
 import { getCurrentInstance, inject } from 'vue'
 import { track } from '../core/track'
-import { executeCollectBy, executeTrackBy, trackByFinally } from '../lib/integration'
-import { watchIntersection, unwatchIntersection } from '../utils/intersection'
+import { addListener, executeCollectBy, executeTrackBy, removeListener, trackByFinally } from '../lib/integration'
 import type { TrackConfig } from '../core/config'
 import type { TrackByEvent, TrackByContext, TrackByIteration } from '../lib/integration'
 import type { ObjectDirective, Plugin, ComponentPublicInstance, ComponentInternalInstance, InjectionKey } from 'vue'
-
-declare module '../core/config' {
-  export interface TrackConfig {
-    /** Time interval of appearing detection */
-    appearingInterval?: number,
-    /** Options for IntersectionObserver of appearing detection */
-    appearingOptions?: IntersectionObserverInit,
-  }
-}
 
 export type TrackedByOptions = TrackByContext<ComponentPublicInstance>
 
@@ -58,7 +48,7 @@ function isMatchedBinding(binding: TrackByBinding, { key, el, component }: Track
     && (!component || binding.component === component)
 }
 
-function assignWith(data: Record<string, any>, pattern: TrackByBindingPattern) {
+function assignWith(data: Record<string, any> | undefined, pattern: TrackByBindingPattern) {
   const assigned = bindings.filter(binding => {
     return binding.modifiers.with && isMatchedBinding(binding, pattern)
   }).reverse()
@@ -107,8 +97,8 @@ function* createContextIterator(component: Nullable<ComponentPublicInstance>): I
     const pattern: TrackByBindingPattern = { component: component.$ }
     yield {
       context: {
-        prevented: key => isPrevented({ ...pattern, key }),
-        default: (key, data) => assignWith(data, { ...pattern, key }),
+        prevented: (key: string) => isPrevented({ ...pattern, key }),
+        default: (key: string, data: Record<string, any>) => assignWith(data, { ...pattern, key }),
       },
       receiver: component,
     }
@@ -116,13 +106,13 @@ function* createContextIterator(component: Nullable<ComponentPublicInstance>): I
   }
 }
 
-export function trackBy(this: Nullable<ComponentPublicInstance>, key: string, data: Record<string, any>, channels?: string[]) {
+export function trackBy(this: Nullable<ComponentPublicInstance>, key: string, data?: Record<string, any>, channels?: string[]) {
   return executeTrackBy(createContextIterator(this), key, data, channels)
 }
 
 trackBy.final = trackByFinally
 
-export function collectBy(this: Nullable<ComponentPublicInstance>, key: string, data: Record<string, any> = {}) {
+export function collectBy(this: Nullable<ComponentPublicInstance>, key: string, data?: Record<string, any>) {
   return executeCollectBy(createContextIterator(this), key, data)
 }
 
@@ -144,14 +134,8 @@ const TrackByDirective: ObjectDirective<HTMLElement, Record<string, any>> = {
     }
     if (modifiers.with || modifiers.prevent) {
       // pass
-    } else if (arg === 'appear') {
-      watchIntersection(el, binding.listener, {
-        once: true,
-        interval: track.config.appearingInterval ?? 300,
-        options: track.config.appearingOptions,
-      })
     } else {
-      el.addEventListener(arg as keyof HTMLElementEventMap, binding.listener)
+      addListener(el, arg as TrackByEvent, binding.listener)
     }
     bindings.push(binding)
   },
@@ -172,10 +156,8 @@ const TrackByDirective: ObjectDirective<HTMLElement, Record<string, any>> = {
     bindings.splice(index, 1)
     if (modifiers.with || modifiers.prevent) {
       // pass
-    } else if (arg === 'appear') {
-      unwatchIntersection(el, binding.listener)
     } else {
-      el.removeEventListener(arg as keyof HTMLElementEventMap, binding.listener)
+      removeListener(el, arg as TrackByEvent, binding.listener)
     }
   },
 }

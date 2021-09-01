@@ -219,6 +219,7 @@ describe('VueTracker', () => {
     wrapper.vm.$trackBy('click', { foo: 'bar' })
     expect(mockGIOInstance).toHaveBeenCalledWith('track', 'click', { foo: 'bar' })
 
+    mockGIOInstance.mockClear()
     wrapper.unmount()
   })
 
