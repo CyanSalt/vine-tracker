@@ -1,6 +1,6 @@
 # vine-tracker
 
-Vue.js 埋点框架。
+适用于 Vue.js (甚至 React) 的埋点框架。
 
 ## 安装
 
@@ -259,4 +259,77 @@ export default {
   },
 };
 </script>
+```
+
+## React 支持
+
+你可以在 React 中用类似的方式使用。
+
+通过组件的形式:
+
+```jsx
+import { Tracker } from 'vine-tracker/dist/react'
+
+function Component() {
+  const [count, setCount] = useState(0)
+
+  const trackedBy = useMemo(() => ({
+    default: {
+      count,
+    },
+  }), [count])
+
+  return (
+    <div className="component">
+      <Tracker context={trackedBy}>
+        <ChildComponent />
+      </Tracker>
+    </div>
+  )
+}
+```
+
+```jsx
+import { Tracker } from 'vine-tracker/dist/react'
+
+function ChildComponent() {
+  return (
+    <Tracker by="click" data={{ foo: 'bar' }}>
+      <button />
+    </Tracker>
+  )
+}
+```
+
+通过 props 注入的形式:
+
+```jsx
+import { withTracker } from 'vine-tracker/dist/react'
+
+function Component(props) {
+  const handleClick = useCallback(() => {
+    props.trackBy('click')
+  })
+  return (
+    <button onClick={handleClick} />
+  )
+}
+
+export default withTracker(Component)
+```
+
+通过 Hooks:
+
+```jsx
+import { useTracker } from 'vine-tracker/dist/react'
+
+function Component(props) {
+  const { trackBy } = useTracker()
+  const handleClick = useCallback(() => {
+    trackBy('click')
+  }, [])
+  return (
+    <button onClick={handleClick} />
+  )
+}
 ```

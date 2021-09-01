@@ -1,6 +1,6 @@
 # vine-tracker
 
-Tracking framework for Vue.js.
+Tracking framework for Vue.js (and even React).
 
 [Chinese docs(中文文档)](docs/README-zh.md)
 
@@ -262,4 +262,77 @@ export default {
   },
 };
 </script>
+```
+
+## Support for React
+
+You can use it in a similar way in React.
+
+In the form of components:
+
+```jsx
+import { Tracker } from 'vine-tracker/dist/react'
+
+function Component() {
+  const [count, setCount] = useState(0)
+
+  const trackedBy = useMemo(() => ({
+    default: {
+      count,
+    },
+  }), [count])
+
+  return (
+    <div className="component">
+      <Tracker context={trackedBy}>
+        <ChildComponent />
+      </Tracker>
+    </div>
+  )
+}
+```
+
+```jsx
+import { Tracker } from 'vine-tracker/dist/react'
+
+function ChildComponent() {
+  return (
+    <Tracker by="click" data={{ foo: 'bar' }}>
+      <button />
+    </Tracker>
+  )
+}
+```
+
+In the form of props injections:
+
+```jsx
+import { withTracker } from 'vine-tracker/dist/react'
+
+function Component(props) {
+  const handleClick = useCallback(() => {
+    props.trackBy('click')
+  })
+  return (
+    <button onClick={handleClick} />
+  )
+}
+
+export default withTracker(Component)
+```
+
+In the form of Hooks:
+
+```jsx
+import { useTracker } from 'vine-tracker/dist/react'
+
+function Component(props) {
+  const { trackBy } = useTracker()
+  const handleClick = useCallback(() => {
+    trackBy('click')
+  })
+  return (
+    <button onClick={handleClick} />
+  )
+}
 ```
