@@ -10,7 +10,7 @@ Tracking framework for Vue.js (and even React).
 npm install vine-tracker
 ```
 
-If you need to use this library on production environment, make sure that either you have installed any script bundler like Webpack, or the target browsers support ES Modules.
+If you need to use this library on production environment, make sure that you have installed any script bundler like Webpack. It is not supported for direct use in browsers since it relies on some CommonJS modules.
 
 ## Usage
 
@@ -40,6 +40,14 @@ track('pageview', {
 }, ['gio']);
 ```
 
+When an event is sent by `track`, the event name and data will be passed to the `track` method of the corresponding channel. For events of the form `[type]:[key]`, the method corresponding to `type` will be called.
+
+Currently there are built-in implementations of `console` and [`gio`](https://www.growingio.com/) channels, which you need to import when using them:
+
+```javascript
+import 'vine-tracker/dist/lib/channels/gio';
+```
+
 The channel could be registered or overwritten by yourself:
 
 ```javascript
@@ -62,7 +70,7 @@ registerChannel('api', {
 
 ```
 
-You can also use the built-in Vue.js plugin:
+You can also use the built-in Vue plugin:
 
 ```javascript
 import { createApp } from 'vue';
@@ -95,7 +103,7 @@ Vue.use(VueTracker, {
 
 ```
 
-## Advanced Topics for Vue.js
+## Advanced Topics for Vue
 
 If you're using Vue, a directive named `track-by` and its corresponding instance method `$trackBy` are provided, which support bubbling up.
 
@@ -336,3 +344,25 @@ function Component(props) {
   )
 }
 ```
+
+## Configuration
+
+The following configurations are currently supported:
+
+- `disabled` : When set to `true`, all tracking behaviors will be disabled.
+  - You can also set an array of strings to disable some specific channels.
+- `debug` : When set to `true`, all tracking behaviors will be printed in the console.
+  - Although this behavior is implemented based on the console channel, it does not affect any logic related to channels, such as the return value of the `track` function.
+- `errorHandler` : Function used to handle errors when the channels' behaviors generate an error. Defaults to `console.error`.
+- `defaultChannels` : Specifies the default channels.
+- `keySep` : Specifies the separator between the event type and the event name. Defaults to `:`.
+
+The built-in channels provide the following configuration:
+
+- `gioInstance` : The GrowingIO instance that the `gio` channel uses to send tracking data. Defaults to `window.gio`.
+
+When working with Vue, the following configurations are also supported:
+
+- `fallbackTrackingBy` : When set to `true`, tracking data will eventually be sent even if no component declares the `final` option. Defaults to `false`.
+- `appearingInterval` : The time interval used to handle `appear` events. Defaults to `300`.
+- `appearingOptions` : [Options](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/IntersectionObserver#parameters) for the `IntersectionObserver` used to handle the `appear` event.
