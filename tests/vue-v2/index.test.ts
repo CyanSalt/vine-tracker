@@ -2,10 +2,12 @@ import { createLocalVue, mount } from 'vue-test-utils-v1'
 import { track } from '../../src'
 import { VueTracker } from '../../src/vue-v2'
 import '../../src/lib/channels/gio'
+import type { LocalVue, LocalVueClass } from './types'
+import type { Wrapper } from 'vue-test-utils-v1'
 
 describe('VueTracker', () => {
 
-  const localVue = createLocalVue()
+  const localVue = createLocalVue() as LocalVueClass
   const defaultGIOInstance = track.config.gioInstance
   const mockGIOInstance = jest.fn()
   localVue.use(VueTracker, {
@@ -26,7 +28,7 @@ describe('VueTracker', () => {
         <p></p>
       `,
     }
-    const wrapper = mount(Component, {
+    const wrapper = mount<LocalVue>(Component, {
       localVue,
     })
     wrapper.vm.$track('foo', { bar: 'baz' }, ['gio'])
@@ -42,7 +44,7 @@ describe('VueTracker', () => {
         <p></p>
       `,
     }
-    const wrapper = mount(Component, {
+    const wrapper = mount<LocalVue>(Component, {
       localVue,
     })
     wrapper.vm.$trackBy.final('click', { foo: 'bar' }, ['gio'])
@@ -58,7 +60,7 @@ describe('VueTracker', () => {
         <p></p>
       `,
     }
-    const wrapper = mount(Component, {
+    const wrapper = mount<LocalVue>(Component, {
       localVue,
     })
     wrapper.vm.$trackBy('click', { foo: 'bar' }, ['gio'])
@@ -83,7 +85,7 @@ describe('VueTracker', () => {
         final: true,
       },
     }
-    const wrapper = mount(Component, {
+    const wrapper = mount<LocalVue>(Component, {
       localVue,
     })
     wrapper.vm.$trackBy('click', { foo: 'bar' }, ['gio'])
@@ -101,7 +103,7 @@ describe('VueTracker', () => {
       `,
       trackedBy: mockFn,
     }
-    const wrapper = mount(Component, {
+    const wrapper = mount<LocalVue>(Component, {
       localVue,
     })
     wrapper.vm.$trackBy('click', { foo: 'bar' }, ['gio'])
@@ -121,7 +123,7 @@ describe('VueTracker', () => {
         channels: ['gio'],
       },
     }
-    const wrapper = mount(Component, {
+    const wrapper = mount<LocalVue>(Component, {
       localVue,
     })
     wrapper.vm.$trackBy('click', { foo: 'bar' })
@@ -159,10 +161,11 @@ describe('VueTracker', () => {
         },
       },
     }
-    const wrapper = mount(Parent, {
+    const wrapper = mount<LocalVue>(Parent, {
       localVue,
     })
-    wrapper.findComponent({ ref: 'child' }).vm.$trackBy('click', { quux: 'grault' }, ['gio'])
+    const child = wrapper.findComponent({ ref: 'child' }) as Wrapper<LocalVue>
+    child.vm.$trackBy('click', { quux: 'grault' }, ['gio'])
     expect(mockGIOInstance).toHaveBeenCalledWith('track', 'click', {
       foo: 'bar',
       baz: 'qux',
@@ -198,10 +201,11 @@ describe('VueTracker', () => {
         },
       },
     }
-    const wrapper = mount(Parent, {
+    const wrapper = mount<LocalVue>(Parent, {
       localVue,
     })
-    wrapper.findComponent({ ref: 'child' }).vm.$trackBy('click', { baz: 'qux' }, ['gio'])
+    const child = wrapper.findComponent({ ref: 'child' }) as Wrapper<LocalVue>
+    child.vm.$trackBy('click', { baz: 'qux' }, ['gio'])
     expect(mockGIOInstance).not.toHaveBeenCalled()
 
     wrapper.destroy()
@@ -226,7 +230,7 @@ describe('VueTracker', () => {
         },
       },
     }
-    const wrapper = mount(Component, {
+    const wrapper = mount<LocalVue>(Component, {
       localVue,
     })
     wrapper.vm.$trackBy('click', { baz: 'qux', please_prevent_me: 'foo' }, ['gio'])
@@ -407,14 +411,16 @@ describe('VueTracker', () => {
         },
       },
     }
-    const wrapper = mount(Parent, {
+    const wrapper = mount<LocalVue>(Parent, {
       localVue,
     })
-    wrapper.findComponent({ ref: 'first' }).vm.$trackBy('click', { foo: 'bar' })
+    const firstChild = wrapper.findComponent({ ref: 'first' }) as Wrapper<LocalVue>
+    firstChild.vm.$trackBy('click', { foo: 'bar' })
     expect(mockGIOInstance).toHaveBeenCalledWith('track', 'click', { foo: 'bar', baz: 'quux' })
     mockGIOInstance.mockClear()
 
-    wrapper.findComponent({ ref: 'second' }).vm.$trackBy('click', { baz: 'qux' })
+    const secondChild = wrapper.findComponent({ ref: 'second' }) as Wrapper<LocalVue>
+    secondChild.vm.$trackBy('click', { baz: 'qux' })
     expect(mockGIOInstance).toHaveBeenCalledWith('track', 'click', { baz: 'qux' })
 
     mockGIOInstance.mockClear()
@@ -471,7 +477,7 @@ describe('VueTracker', () => {
       localVue,
     })
     const child = wrapper.findComponent({ ref: 'child' })
-    const descendant = child.findComponent({ ref: 'descendant' })
+    const descendant = child.findComponent({ ref: 'descendant' }) as Wrapper<LocalVue>
     descendant.vm.$trackBy('click', { foo: 'a' }, ['gio'])
     expect(mockGIOInstance).toHaveBeenCalledWith('track', 'click', { foo: 'a', bar: 'c', baz: 'e', qux: 'g', quux: 'j', corage: 'k' })
 

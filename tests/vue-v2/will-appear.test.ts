@@ -1,10 +1,11 @@
 import { createLocalVue, mount } from 'vue-test-utils-v1'
 import { WillAppear } from '../../src/vue-v2/will-appear'
 import { mockIntersectionObserver, triggerIntersectionObserver } from '../intersection.mock'
+import type { LocalVueClass } from './types'
 
 describe('WillAppear', () => {
 
-  const localVue = createLocalVue()
+  const localVue = createLocalVue() as LocalVueClass
   localVue.use(WillAppear)
 
   it('should be able to be triggered when the element is intersecting', () => {
