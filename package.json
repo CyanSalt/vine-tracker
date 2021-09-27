@@ -7,6 +7,9 @@
     "docs"
   ],
   "main": "dist/index.js",
+  "sideEffects": [
+    "./dist/lib/channels/*.js"
+  ],
   "scripts": {
     "lint": "eslint --ignore-path .gitignore --fix .",
     "prepack": "rm -rf dist && tsc",
