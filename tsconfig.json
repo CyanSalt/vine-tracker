@@ -3,7 +3,6 @@
   "compilerOptions": {
     "noEmit": false,
     "declaration": true,
-    "module": "CommonJS",
     "rootDir": "src",
     "outDir": "dist",
     "skipLibCheck": true,
