@@ -1,6 +1,6 @@
 {
   "name": "vine-tracker",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "Tracker framework for Vue.js (and even React)",
   "files": [
     "dist",

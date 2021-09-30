@@ -1,3 +1,11 @@
+### [1.3.3](https://github.com/CyanSalt/vine-tracker/compare/v1.3.2...v1.3.3) (2021-09-30)
+
+
+### Bug Fixes
+
+* compatibility for vue@2 ([82fce40](https://github.com/CyanSalt/vine-tracker/commit/82fce40543293dde727f06076e8c7224c34e94ce))
+* side effects for tree shaking ([a9123b6](https://github.com/CyanSalt/vine-tracker/commit/a9123b6e35a4cd332d16a3432dc22cca87b1a289))
+
 ### [1.3.2](https://github.com/CyanSalt/vine-tracker/compare/v1.3.1...v1.3.2) (2021-09-27)
 
 
