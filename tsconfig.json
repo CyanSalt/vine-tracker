@@ -6,7 +6,17 @@
     "module": "CommonJS",
     "rootDir": "src",
     "outDir": "dist",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "plugins": [
+      {
+        "transform": "typescript-transform-aliases",
+        "aliases": {
+          "^vue-v2(?=$|/)": "vue"
+        },
+        "after": true,
+        "afterDeclarations": true
+      }
+    ]
   },
   "include": [
     "src"

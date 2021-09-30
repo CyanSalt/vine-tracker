@@ -12,7 +12,7 @@
   ],
   "scripts": {
     "lint": "eslint --ignore-path .gitignore --fix .",
-    "prepack": "rm -rf dist && tsc",
+    "prepack": "rm -rf dist && ttsc",
     "release": "release-it",
     "test": "jest"
   },
