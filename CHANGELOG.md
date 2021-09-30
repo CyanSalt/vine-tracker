@@ -1,3 +1,10 @@
+### [1.3.4](https://github.com/CyanSalt/vine-tracker/compare/v1.3.3...v1.3.4) (2021-09-30)
+
+
+### Bug Fixes
+
+* compilation target ([bd06028](https://github.com/CyanSalt/vine-tracker/commit/bd060281d4a5db0657c1a263bd661920fba023d6))
+
 ### [1.3.3](https://github.com/CyanSalt/vine-tracker/compare/v1.3.2...v1.3.3) (2021-09-30)
 
 
