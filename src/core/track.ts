@@ -31,7 +31,9 @@ function settle(result: any, context: TrackContext) {
 
 export function track(fullKey: string, data: Record<string, any>, channels?: string[]) {
   const [type, key] = resolveTypedKey(fullKey)
-  if (!channels) channels = config.defaultChannels
+  if (!channels) {
+    channels = config.defaultChannels
+  }
   let debugChannels: string[] = []
   if (config.debug) {
     if (!channels.length) {

@@ -36,7 +36,11 @@ function removeWatcher(watcher) {
   }
 }
 
-export function watchIntersection(el: HTMLElement, listener: IntersectionListener, { once, interval, options }: WatcherOptions = {}) {
+export function watchIntersection(
+  el: HTMLElement,
+  listener: IntersectionListener,
+  { once, interval, options }: WatcherOptions = {},
+) {
   if (!observer) {
     observer = new IntersectionObserver(entries => {
       entries.forEach(({ target, isIntersecting }) => {
@@ -45,7 +49,9 @@ export function watchIntersection(el: HTMLElement, listener: IntersectionListene
             if (isIntersecting) {
               const fn = watcher._listener
               fn(target)
-              if (watcher.once) removeWatcher(watcher)
+              if (watcher.once) {
+                removeWatcher(watcher)
+              }
             }
           })
       })

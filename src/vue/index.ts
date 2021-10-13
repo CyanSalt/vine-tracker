@@ -1,10 +1,10 @@
 /// <reference lib="es2020" />
 import { getCurrentInstance, inject } from 'vue'
+import type { ObjectDirective, Plugin, ComponentPublicInstance, ComponentInternalInstance, InjectionKey } from 'vue'
+import type { TrackConfig } from '../core/config'
 import { track } from '../core/track'
 import { addListener, executeCollectBy, executeTrackBy, removeListener, trackByFinally } from '../lib/integration'
-import type { TrackConfig } from '../core/config'
 import type { TrackByEvent, TrackByContext, TrackByIteration } from '../lib/integration'
-import type { ObjectDirective, Plugin, ComponentPublicInstance, ComponentInternalInstance, InjectionKey } from 'vue'
 
 export type TrackedByOptions = TrackByContext<ComponentPublicInstance>
 
@@ -86,7 +86,9 @@ export function defineTrackedBy(options: TrackedByOptions) {
 
 type Nullable<T> = T | null | undefined
 
-function* createContextIterator(component: Nullable<ComponentPublicInstance>): Iterable<TrackByIteration<ComponentPublicInstance>> {
+function* createContextIterator(
+  component: Nullable<ComponentPublicInstance>,
+): Iterable<TrackByIteration<ComponentPublicInstance>> {
   while (component) {
     const context = getDefinedContext(component)
     yield {
@@ -106,7 +108,12 @@ function* createContextIterator(component: Nullable<ComponentPublicInstance>): I
   }
 }
 
-export function trackBy(this: Nullable<ComponentPublicInstance>, key: string, data?: Record<string, any>, channels?: string[]) {
+export function trackBy(
+  this: Nullable<ComponentPublicInstance>,
+  key: string,
+  data?: Record<string, any>,
+  channels?: string[],
+) {
   return executeTrackBy(createContextIterator(this), key, data, channels)
 }
 
@@ -141,13 +148,15 @@ const TrackByDirective: ObjectDirective<HTMLElement, Record<string, any>> = {
   },
   updated(el, { arg = '', value, oldValue }) {
     const binding = bindings.find(
-      item => item.el === el && item.arg === arg && item.value === oldValue
+      item => item.el === el && item.arg === arg && item.value === oldValue,
     )
-    if (binding) binding.value = value
+    if (binding) {
+      binding.value = value
+    }
   },
   beforeUnmount(el, { arg = '', value, modifiers }) {
     const index = bindings.findIndex(
-      item => item.el === el && item.arg === arg && item.value === value
+      item => item.el === el && item.arg === arg && item.value === value,
     )
     // Seems that `beforeUnmount` will be triggered multiple times
     // when used on dynamic components

@@ -24,10 +24,10 @@ export function getObservationTargets(observer: IntersectionObserver) {
 
 export function triggerIntersectionObserver(
   observer: IntersectionObserver,
-  args: Partial<IntersectionObserverEntry>
+  args: Partial<IntersectionObserverEntry>,
 ) {
   observer['_callback'](
     getObservationTargets(observer).map(item => ({ ...args, target: item.element })),
-    observer
+    observer,
   )
 }

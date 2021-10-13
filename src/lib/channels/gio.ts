@@ -1,6 +1,6 @@
 import { registerChannel } from '../../core/channel'
-import config from '../../core/config'
 import type { Channel } from '../../core/channel'
+import config from '../../core/config'
 
 declare global {
   interface Window {

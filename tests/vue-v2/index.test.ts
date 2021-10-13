@@ -1,9 +1,9 @@
+import type { Wrapper } from 'vue-test-utils-v1'
 import { createLocalVue, mount } from 'vue-test-utils-v1'
 import { track } from '../../src'
 import { VueTracker } from '../../src/vue-v2'
 import '../../src/lib/channels/gio'
 import type { LocalVue, LocalVueClass } from './types'
-import type { Wrapper } from 'vue-test-utils-v1'
 
 describe('VueTracker', () => {
 

@@ -1,11 +1,11 @@
 /// <reference types="vue-v2/types/options" />
 /// <reference types="vue-v2/types/vue" />
-import { track } from '../core/track'
-import { addListener, executeCollectBy, executeTrackBy, removeListener, trackByFinally } from '../lib/integration'
-import type { TrackConfig } from '../core/config'
-import type { TrackByEvent, TrackByContext, TrackByIteration } from '../lib/integration'
 import type { DirectiveOptions, PluginObject } from 'vue-v2'
 import type VueComponent from 'vue-v2'
+import type { TrackConfig } from '../core/config'
+import { track } from '../core/track'
+import { addListener, executeCollectBy, executeTrackBy, removeListener, trackByFinally } from '../lib/integration'
+import type { TrackByEvent, TrackByContext, TrackByIteration } from '../lib/integration'
 
 declare module 'vue-v2/types/vue' {
   export interface Vue {
@@ -126,13 +126,15 @@ const TrackByDirective: DirectiveOptions = {
   },
   update(el, { arg = '', value, oldValue }) {
     const binding = bindings.find(
-      item => item.el === el && item.arg === arg && item.value === oldValue
+      item => item.el === el && item.arg === arg && item.value === oldValue,
     )
-    if (binding) binding.value = value
+    if (binding) {
+      binding.value = value
+    }
   },
   unbind(el, { arg = '', value, modifiers }) {
     const index = bindings.findIndex(
-      item => item.el === el && item.arg === arg && item.value === value
+      item => item.el === el && item.arg === arg && item.value === value,
     )
     // `beforeUnmount` will be triggered multiple times sometimes in vue@3
     // Not sure if it will occur in vue@2

@@ -1,7 +1,7 @@
 import { Children, cloneElement, createContext, createElement, forwardRef, isValidElement, useCallback, useContext, useRef } from 'react'
+import type { ComponentType, ForwardedRef, FunctionComponent, ReactElement } from 'react'
 import { addListener, executeCollectBy, executeTrackBy, removeListener, trackByFinally } from '../lib/integration'
 import type { TrackByContext, TrackByEvent, TrackByIteration } from '../lib/integration'
-import type { ComponentType, ForwardedRef, FunctionComponent, ReactElement } from 'react'
 
 const TrackerContext = createContext<TrackByContext[]>([])
 

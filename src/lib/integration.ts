@@ -46,7 +46,12 @@ export interface TrackByIteration<T = unknown> {
   receiver?: any,
 }
 
-export function executeTrackBy<T = unknown>(iterable: Iterable<TrackByIteration<T>>, key: string, data: Record<string, any> = {}, channels?: string[]) {
+export function executeTrackBy<T = unknown>(
+  iterable: Iterable<TrackByIteration<T>>,
+  key: string,
+  data: Record<string, any> = {},
+  channels?: string[],
+) {
   for (const { context, receiver } of iterable) {
     // Options
     const bindReceiver = <U>(value: ContextBoundValue<U, T>): U => {
@@ -64,7 +69,9 @@ export function executeTrackBy<T = unknown>(iterable: Iterable<TrackByIteration<
       }
       const prevented = bindReceiver(context.prevented)
       if (prevented) return undefined
-      if (!channels) channels = bindReceiver(context.channels)
+      if (!channels) {
+        channels = bindReceiver(context.channels)
+      }
       const final = bindReceiver(context.final)
       if (final) return trackByFinally(key, data, channels)
     }
@@ -74,7 +81,11 @@ export function executeTrackBy<T = unknown>(iterable: Iterable<TrackByIteration<
   }
 }
 
-export function executeCollectBy<T = unknown>(iterable: Iterable<TrackByIteration<T>>, key: string, data?: Record<string, any>) {
+export function executeCollectBy<T = unknown>(
+  iterable: Iterable<TrackByIteration<T>>,
+  key: string,
+  data?: Record<string, any>,
+) {
   const result = executeTrackBy(iterable, key, data, ['pipe'])
   return result?.[0].result as { key: string, data: Record<string, any> } | null | undefined
 }

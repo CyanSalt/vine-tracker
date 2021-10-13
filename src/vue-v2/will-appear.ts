@@ -1,5 +1,5 @@
-import { unwatchIntersection, watchIntersection } from '../utils/intersection'
 import type { DirectiveOptions, PluginObject } from 'vue-v2'
+import { unwatchIntersection, watchIntersection } from '../utils/intersection'
 
 function triggerAppearEvent(el: HTMLElement) {
   const event = new CustomEvent('appear')
