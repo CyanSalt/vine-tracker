@@ -12,7 +12,7 @@ module.exports = {
     '/node_modules/',
   ],
   collectCoverageFrom: [
-    'packages/**/*.{js,ts}',
+    '**/*.{js,ts}',
     // NPM ignored files
     '!**/dist/**',
     '!**/node_modules/**',
