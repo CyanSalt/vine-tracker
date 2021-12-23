@@ -219,7 +219,7 @@ describe('ReactTracker', () => {
         },
       }))
     }
-    const Parent = props => {
+    const Parent = (props: { preventedKey?: string }) => {
       return createElement(Tracker, {
         context: {
           final() {

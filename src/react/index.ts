@@ -1,5 +1,5 @@
 import { Children, cloneElement, createContext, createElement, forwardRef, isValidElement, useCallback, useContext, useRef } from 'react'
-import type { ComponentType, ForwardedRef, FunctionComponent, ReactElement } from 'react'
+import type { ComponentType, ForwardedRef, FunctionComponent, ReactElement, ReactNode } from 'react'
 import { addListener, executeCollectBy, executeTrackBy, removeListener, trackByFinally } from '../lib/integration'
 import type { TrackByContext, TrackByEvent, TrackByIteration } from '../lib/integration'
 
@@ -94,8 +94,13 @@ export function useTracker(): TrackerComponentProps {
 }
 
 export function withTracker<P extends TrackerComponentProps, C extends ComponentType<P>>(component: C) {
-  return forwardRef((props, ref) => {
-    const trackerComponentProps = useTracker()
-    return createElement(component, { ...props, ...trackerComponentProps, ref }, props.children)
-  }) as ComponentType<Omit<P, keyof TrackerComponentProps>>
+  const Component = forwardRef<unknown, Omit<P, keyof TrackerComponentProps>>(
+    (props: P & { children?: ReactNode }, ref) => {
+      const trackerComponentProps = useTracker()
+      // eslint-disable-next-line react/prop-types
+      return createElement(component, { ...props, ...trackerComponentProps, ref }, props.children)
+    },
+  )
+  Component.displayName = 'WithTracker'
+  return Component
 }
